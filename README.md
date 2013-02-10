@@ -8,7 +8,7 @@ A script to convert GStreamer debug traces to Pajé file format
 - gstparser.py, written by Serge Emteu and modified by myself to fit to Pajé timestamps, and provided here.
   It allows to transform a gst debug stream in a readable csv file.
 
-- poti C library, written by Lucas Schnorr, providing some functions to generate paje trace files.
+- poti C library, written by Lucas Schnorr, providing some functions to generate Pajé trace files.
   You need to download it and compile it before launching gst2paje.py:
 
         $ git clone https://github.com/schnorr/poti.git
@@ -28,7 +28,7 @@ A script to convert GStreamer debug traces to Pajé file format
         
 ###Generate a Pajé trace file
         
-- Execute gst2paje.py:
+- execute gst2paje.py:
 
         $ ./gst2paje.py gst-trace.csv > gst-trace.pj
 
