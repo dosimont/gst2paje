@@ -26,7 +26,9 @@ A script to convert GStreamer debug traces to Pajé file format
 
         $ ./gstparser.py gst-stream gst-trace.csv
         
-- then, execute gst2paje.py:
+###Generate a Pajé trace file
+        
+- Execute gst2paje.py:
 
         $ ./gst2paje.py gst-trace.csv > gst-trace.pj
 
