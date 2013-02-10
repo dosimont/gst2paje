@@ -91,12 +91,12 @@ for line in csvstreammod:
       ctypes.CDLL('./poti.so').poti_CreateContainer(c_double(float(line[0])), line[2], "ThreadID", line[1], line[2])
       process_dict[line[1]].thread[line[2]] = Thread(line[2])
     if not process_dict[line[1]].thread[line[2]].function.has_key(line[8]): 
-      ctypes.CDLL('./poti.so').poti_CreateContainer(c_double(float(line[0])), line[8], "Function", line[2], line[8])
+      ctypes.CDLL('./poti.so').poti_CreateContainer(c_double(float(line[0])), line[8] + "_on_" + line[2], "Function", line[2], line[8] + "_on_" + line[2])
       process_dict[line[1]].thread[line[2]].function[line[8]] = Function(line[8])
     if process_dict[line[1]].thread[line[2]].currentfunction:
-      ctypes.CDLL('./poti.so').poti_PushState(c_double(float(line[0])), process_dict[line[1]].thread[line[2]].currentfunction, "State", "i")
+      ctypes.CDLL('./poti.so').poti_SetState(c_double(float(line[0])), process_dict[line[1]].thread[line[2]].currentfunction + "_on_" + line[2], "State", "i")
     process_dict[line[1]].thread[line[2]].currentfunction=line[8]
-    ctypes.CDLL('./poti.so').poti_PushState(c_double(float(line[0])), line[8], "State", "r")
+    ctypes.CDLL('./poti.so').poti_SetState(c_double(float(line[0])), line[8] + "_on_" + line[2], "State", "r")
 
   #Closing containers
 csvstream.close()
