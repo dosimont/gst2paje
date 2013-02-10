@@ -24,6 +24,8 @@ import csv, math
 import ctypes
 from ctypes import *
 
+libpoti='./libpoti.so'
+
 class Function:
   def __init__(self, name):
     self.name =name
@@ -39,65 +41,89 @@ class Process:
     self.name =name
     self.thread ={}
 
+class Container:
+  def __init__(self, name, containerType):
+    self.name =name
+    self.containerType =containerType
 
 #Parameters checking
-if (len(sys.argv) < 3):
-    print ("Usage : " + sys.argv[0] + " gstreamertrace.csv pajetrace.pj")
+if (len(sys.argv) < 2):
+    print ("Usage : " + sys.argv[0] + " gstreamertrace.csv > pajetrace.pj")
     exit(-1)
 
 #Getting the inputs
 csvfile = sys.argv[1]
-pajefile = sys.argv[2]
 
 csvstream = open(csvfile, 'r')
 csvstreammod = csv.reader(csvstream, delimiter=',')
-pajestream = open(pajefile, 'w')
 
-#First, dump the pajeheader
+#ctypes.CDLL(libpoti).poti_open(pajefile)
+#ctypes.CDLL(libpoti).poti_init('w')
+#Dump the pajeheader
 #First parameter is a boolean indicating a basic header or not
 #Second parameter is a boolean indicating an old header or not
 
-ctypes.CDLL('./poti.so').poti_header(0, 0);
+ctypes.CDLL(libpoti).poti_header(0, 0)
 
-#Defining my types
-ctypes.CDLL('./poti.so').poti_DefineContainerType("Root", "0", "Root")
-ctypes.CDLL('./poti.so').poti_DefineContainerType("ProcessID", "Root", "ProcessID")
-ctypes.CDLL('./poti.so').poti_DefineContainerType("ThreadID", "ProcessID", "ThreadID")
-#ctypes.CDLL('./poti.so').poti_DefineContainerType("DebugLevel", "ThreadID", "DebugLevel")
-#ctypes.CDLL('./poti.so').poti_DefineContainerType("Source_file", "ThreadID", "Source_file")
-ctypes.CDLL('./poti.so').poti_DefineContainerType("Function", "ThreadID", "Function")
-ctypes.CDLL('./poti.so').poti_DefineStateType("State", "Function", "State")
+#Defining the types
+ctypes.CDLL(libpoti).poti_DefineContainerType("Root", "0", "Root")
+ctypes.CDLL(libpoti).poti_DefineContainerType("ProcessID", "Root", "ProcessID")
+ctypes.CDLL(libpoti).poti_DefineContainerType("ThreadID", "ProcessID", "ThreadID")
+ctypes.CDLL(libpoti).poti_DefineContainerType("Function", "ThreadID", "Function")
+ctypes.CDLL(libpoti).poti_DefineStateType("State", "Function", "State")
 
-#Define values and color for the STATE type
-ctypes.CDLL('./poti.so').poti_DefineEntityValue("r", "State", "running", "0.0 1.0 0.0")#TODO manage debug lvl
-ctypes.CDLL('./poti.so').poti_DefineEntityValue("i", "State", "idle", "0.3 0.3 0.3")
+#Define values and color for the State type
+ctypes.CDLL(libpoti).poti_DefineEntityValue("ERROR", "State", "Error", "1.0 0.0 0.0")#red
+ctypes.CDLL(libpoti).poti_DefineEntityValue("WARNING", "State", "Warning", "1.0 0.4 0.")#orange
+ctypes.CDLL(libpoti).poti_DefineEntityValue("FIXME", "State", "Fixme", "0.0 0.0 1.0")#blue
+ctypes.CDLL(libpoti).poti_DefineEntityValue("INFO", "State", "Info", "0.0 1.0 0.0")#green
+ctypes.CDLL(libpoti).poti_DefineEntityValue("DEBUG", "State", "Debug", "1.0 0.8 0.0")#yellow
+ctypes.CDLL(libpoti).poti_DefineEntityValue("LOG", "State", "Log", "0.4 0.4 0.4")#dark gray
+ctypes.CDLL(libpoti).poti_DefineEntityValue("TRACE", "State", "Trace", "0.0 0.0 0.0")#black
+ctypes.CDLL(libpoti).poti_DefineEntityValue("IDLE", "State", "Idle", "0.7 0.7 0.7")#light gray
 
-ctypes.CDLL('./poti.so').poti_CreateContainer(c_double(0.00), "Machiiiiine", "Root", "0", "Machiiiiine")
+
+#Create Container Machiiiiine = Root
+ctypes.CDLL(libpoti).poti_CreateContainer(c_double(0.00), "Machiiiiine", "Root", "0", "Machiiiiine")
+container=[]
+container.append(Container("Machiiiiine", "Root"))
 
 #Parsing de la trace
 
-process_dict={}
-threadid=[]
+process={}
 firstline=1
+previousfunction=0
 
 for line in csvstreammod:
   if firstline:
     firstline=0
   elif line:
-    if not process_dict.has_key(line[1]):
-      ctypes.CDLL('./poti.so').poti_CreateContainer(c_double(float(line[0])), line[1], "ProcessID", "Machiiiiine", line[1])
-      process_dict[line[1]]= Process(line[1])
-    if not process_dict[line[1]].thread.has_key(line[2]): 
-      ctypes.CDLL('./poti.so').poti_CreateContainer(c_double(float(line[0])), line[2], "ThreadID", line[1], line[2])
-      process_dict[line[1]].thread[line[2]] = Thread(line[2])
-    if not process_dict[line[1]].thread[line[2]].function.has_key(line[8]): 
-      ctypes.CDLL('./poti.so').poti_CreateContainer(c_double(float(line[0])), line[8] + "_on_" + line[2], "Function", line[2], line[8] + "_on_" + line[2])
-      process_dict[line[1]].thread[line[2]].function[line[8]] = Function(line[8])
-    if process_dict[line[1]].thread[line[2]].currentfunction:
-      ctypes.CDLL('./poti.so').poti_SetState(c_double(float(line[0])), process_dict[line[1]].thread[line[2]].currentfunction + "_on_" + line[2], "State", "i")
-    process_dict[line[1]].thread[line[2]].currentfunction=line[8]
-    ctypes.CDLL('./poti.so').poti_SetState(c_double(float(line[0])), line[8] + "_on_" + line[2], "State", "r")
+    if not process.has_key(line[1]):
+      ctypes.CDLL(libpoti).poti_CreateContainer(c_double(float(line[0])), line[1], "ProcessID", "Machiiiiine", line[1])
+      container.append(Container(line[1], "ProcessID"))
+      process[line[1]]= Process(line[1])
+    if not process[line[1]].thread.has_key(line[2]): 
+      ctypes.CDLL(libpoti).poti_CreateContainer(c_double(float(line[0])), line[2], "ThreadID", line[1], line[2])
+      container.append(Container(line[2], "ThreadID"))
+      process[line[1]].thread[line[2]] = Thread(line[2])
+    if not process[line[1]].thread[line[2]].function.has_key(line[8]): 
+      ctypes.CDLL(libpoti).poti_CreateContainer(c_double(float(line[0])), line[8] + "_on_" + line[2], "Function", line[2], line[8] + "_on_" + line[2])
+      container.append(Container(line[8] + "_on_" + line[2], "Function"))
+      process[line[1]].thread[line[2]].function[line[8]] = Function(line[8])
+#    if process[line[1]].thread[line[2]].currentfunction:
+#/!\We admit only one core is used for the application and only one thread is running at the same time
+    if previousfunction:
+#      ctypes.CDLL(libpoti).poti_SetState(c_double(float(line[0])), process[line[1]].thread[line[2]].currentfunction + "_on_" + line[2], "State", "IDLE")
+      ctypes.CDLL(libpoti).poti_SetState(c_double(float(line[0])), previousfunction, "State", "IDLE")
+#    process[line[1]].thread[line[2]].currentfunction=line[8]
+    previousfunction= line[8] + "_on_" + line[2]
+    ctypes.CDLL(libpoti).poti_SetState(c_double(float(line[0])), line[8] + "_on_" + line[2], "State" , line[3])
+    timestamp=float(line[0])
 
-  #Closing containers
+container.reverse()
+#Closing containers
+for i in container:
+  ctypes.CDLL(libpoti).poti_DestroyContainer(c_double(timestamp+0.1), i.containerType, i.name)
+
+#Closing files
 csvstream.close()
-pajestream.close()
