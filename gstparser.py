@@ -48,7 +48,7 @@ for line in input_stream:
         ts = (int(tmp[0]))
         ts = ts + (int(timestamp[1]) * 60)
         ts = ts + (int(timestamp[0]) * 3600)
-        time = (str(ts)+'.'+str(tmp[1])
+        time = (str(ts)+'.'+str(tmp[1]))
         
         #Getting process ID
         process_id = line[1][line[1].find('m') + 1 : len(line[1])].strip()
