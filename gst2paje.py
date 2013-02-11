@@ -118,7 +118,7 @@ for line in csvstreammod:
       process[line[1]].thread[line[2]].debuglevel[line[5]] = DebugLevel(line[5])
     if not process[line[1]].thread[line[2]].debuglevel[line[5]].function.has_key(line[8]): 
       ctypes.CDLL(libpoti).poti_CreateContainer(c_double(float(line[0])), line[8] + "_dbg_" + line[5] + "_on_" + line[2], "Function", line[5] + "_on_" + line[2], line[8] + "_dbg_" + line[5] + "_on_" + line[2])
-      container.append(Container(line[8] + "_on_" + line[2], "Function"))
+      container.append(Container(line[8] + "_dbg_" + line[5] + "_on_" + line[2], "Function"))
       process[line[1]].thread[line[2]].debuglevel[line[5]].function[line[8]] = Function(line[8])
 #    if process[line[1]].thread[line[2]].currentfunction:
 #/!\We admit only one core is used for the application and only one thread is running at the same time
