@@ -80,7 +80,7 @@ ctypes.CDLL(libpoti).poti_DefineStateType("State", "Function", "State")
 
 #Define values and color for the State type
 ctypes.CDLL(libpoti).poti_DefineEntityValue("ERROR", "State", "Error", "1.0 0.0 0.0")#red
-ctypes.CDLL(libpoti).poti_DefineEntityValue("WARNING", "State", "Warning", "1.0 0.4 0.")#orange
+ctypes.CDLL(libpoti).poti_DefineEntityValue("WARNING", "State", "Warning", "1.0 0.4 0.0")#orange
 ctypes.CDLL(libpoti).poti_DefineEntityValue("FIXME", "State", "Fixme", "0.0 0.0 1.0")#blue
 ctypes.CDLL(libpoti).poti_DefineEntityValue("INFO", "State", "Info", "0.0 1.0 0.0")#green
 ctypes.CDLL(libpoti).poti_DefineEntityValue("DEBUG", "State", "Debug", "1.0 0.8 0.0")#yellow
