@@ -85,7 +85,7 @@ ctypes.CDLL(libpoti).poti_DefineEntityValue("FIXME", "State", "Fixme", "0.0 0.0 
 ctypes.CDLL(libpoti).poti_DefineEntityValue("INFO", "State", "Info", "0.0 1.0 0.0")#green
 ctypes.CDLL(libpoti).poti_DefineEntityValue("DEBUG", "State", "Debug", "1.0 0.8 0.0")#yellow
 ctypes.CDLL(libpoti).poti_DefineEntityValue("LOG", "State", "Log", "0.4 0.4 0.4")#dark gray
-ctypes.CDLL(libpoti).poti_DefineEntityValue("TRACE", "State", "Trace", "0.0 0.0 0.0")#black
+ctypes.CDLL(libpoti).poti_DefineEntityValue("TRACE", "State", "Trace", "0.3 0.3 0.0")#brown
 ctypes.CDLL(libpoti).poti_DefineEntityValue("IDLE", "State", "Idle", "0.7 0.7 0.7")#light gray
 
 
