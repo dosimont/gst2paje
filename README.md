@@ -17,15 +17,21 @@ A script to convert GStreamer debug traces to Pajé file format
         $ cd build       
         $ cmake ..       
         $ make       
-        $ cp libpoti.so.4.2 ../../libpoti.so
+        # make install
 
 ###Generate a csv file
 
 - when you launch your gst-debug application, redirect the std stream to a file
 - then, execute gstparser.py:
 
-        $ ./gstparser.py gst-stream gst-trace.csv
-        
+        $ ./gstparser.py gst-stream gst-trace-temp.csv
+       
+###Sort csv file
+
+- it is important to sort csv file by timestamp order.
+
+        $ sort -n -t, -k1g $gst-trace-temp.csv > $gst-trace.csv
+
 ###Generate a Pajé trace file
         
 - execute gst2paje.py:
