@@ -36,8 +36,8 @@ output_stream = open(output_file, 'w')
 
 #line = input_stream.readline().rstrip('\r\n').split(' ')
 
-output = "#timestamp,processID,ThreadID,DebugCategory,UnknowInfo,DebugLevel,source_file,line,function,object,message\n"
-output_stream.write(output)
+#output = "#timestamp,processID,ThreadID,DebugCategory,UnknowInfo,DebugLevel,source_file,line,function,object,message\n"
+#output_stream.write(output)
 
 for line in input_stream:
     line = line.rstrip('\r\n').split('\x1b')

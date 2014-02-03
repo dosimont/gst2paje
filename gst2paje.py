@@ -86,7 +86,6 @@ ctypes.CDLL(libpoti).poti_DefineEntityValue("INFO", "State", "Info", "0.0 1.0 0.
 ctypes.CDLL(libpoti).poti_DefineEntityValue("DEBUG", "State", "Debug", "1.0 0.8 0.0")#yellow
 ctypes.CDLL(libpoti).poti_DefineEntityValue("LOG", "State", "Log", "0.4 0.4 0.4")#dark gray
 ctypes.CDLL(libpoti).poti_DefineEntityValue("TRACE", "State", "Trace", "0.3 0.3 0.0")#brown
-ctypes.CDLL(libpoti).poti_DefineEntityValue("IDLE", "State", "Idle", "0.7 0.7 0.7")#light gray
 
 
 #Create Container Machiiiiine = Root
@@ -97,7 +96,7 @@ container.append(Container("Machiiiiine", "Root"))
 #Parsing de la trace
 
 process={}
-firstline=1
+firstline=0
 previousfunction=0
 
 for line in csvstreammod:
@@ -124,10 +123,10 @@ for line in csvstreammod:
 #/!\We admit only one core is used for the application and only one thread is running at the same time
     if previousfunction:
 #      ctypes.CDLL(libpoti).poti_SetState(c_double(float(line[0])), process[line[1]].thread[line[2]].currentfunction + "_on_" + line[2], "State", "IDLE")
-      ctypes.CDLL(libpoti).poti_SetState(c_double(float(line[0])), previousfunction, "State", "IDLE")
+      ctypes.CDLL(libpoti).poti_PopState(c_double(float(line[0])), previousfunction, "State")
 #    process[line[1]].thread[line[2]].currentfunction=line[8]
     previousfunction= line[8] + "_dbg_" + line[5] + "_on_" + line[2]
-    ctypes.CDLL(libpoti).poti_SetState(c_double(float(line[0])), line[8] + "_dbg_" + line[5] + "_on_" + line[2], "State" , line[3])
+    ctypes.CDLL(libpoti).poti_PushState(c_double(float(line[0])), line[8] + "_dbg_" + line[5] + "_on_" + line[2], "State" , line[3])
     timestamp=float(line[0])
 
 container.reverse()
